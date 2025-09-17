@@ -54,13 +54,24 @@ using namespace std;
  *  bool decending:  if true, then sort in descending order; otherwise sort
  *                   in ascending order (the default)
  * */
-template<typename T>
+
+
+//BUBBLE SORT-  it looks at two neighbors at a time and if they are in the wrong order it switches them
+//keeps doing this again and again till list is sorted  
+template<typename T>  //template is to make sure that bubble sort works on any data type
 void bubble_sort(vector<T> &list, bool descending) {
-    int n = list.size();
+    int n = list.size(); //this tells us how many things are in the list 
+
+    //will go through the list many times 
     for (int i = 0; i < n - 1; i++) {
+        //compare the neighbors one by one 
         for (int j = 0; j < n - i - 1; j++) {
+
+        //if we are sorting small-big we check is the left number > right number or big-small we check is left < right number 
             if ((!descending && list[j] > list[j+1]) ||
                 (descending && list[j] < list[j+1])) {
+
+                //if they are in the wrong order swap them 
                 swap(list[j], list[j+1]);
             }
         }
@@ -95,19 +106,27 @@ void bubble_sort(vector<T> &list, bool descending) {
  *  bool decending:  if true, then sort in descending order; otherwise sort
  *                   in ascending order (the default)
  * */
-template<typename T>
+
+//SELECTION SORT- goes though the list one spot at a time
+//for each spot it finds the smallest or biggest thing is the rest of the list
+//it than swaps it to the front till the whole list is sorted 
+template<typename T>  // can work on numbers, letters, etc. 
 void selection_sort(vector<T> &list, bool descending) {
-    int n = list.size();
-for (int i = 0; i < n - 1; i++) {
-    int minIndex = i;
-    for (int j = i + 1; j < n; j++) {
+    int n = list.size(); //how many things are in the list
+
+for (int i = 0; i < n - 1; i++) {    //go throught the list one at a time    
+    int minIndex = i;  // pretend if the first one is the smallet or the biggest
+    for (int j = i + 1; j < n; j++) {  // look at all the other items after it 
+
+        //if sorting small-big, find smalller one 
+        //if sorting big-small, find bigger one 
         if ((!descending && list[j] < list[minIndex]) ||
             (descending && list[j] > list[minIndex])) {
-            minIndex = j;
+            minIndex = j;  // found a better one, remember where it is 
         }
     }
     if (minIndex != i) {
-        swap(list[i], list[minIndex]);
+        swap(list[i], list[minIndex]); // if we found a better one we swap it 
     }
 }
 
@@ -143,29 +162,36 @@ for (int i = 0; i < n - 1; i++) {
  *  bool decending:  if true, then sort in descending order; otherwise sort
  *                   in ascending order (the default)
  * */
-template<typename T>
-void insertion_sort(vector<T> &list, bool descending) {
-    int n = list.size();
-for (int i = 1; i < n; i++) {
-    T key = list[i];
-    int j = i - 1;
 
-    // Ascending
+//INSERTION SORT- takes one item at a time and puts it where it belongs 
+//starts with second item - compares it to things before, and shifts them over if needed
+//keeps going till list is sorted 
+template<typename T> //works on numbers, letters, etc. 
+void insertion_sort(vector<T> &list, bool descending) {
+    int n = list.size(); //counts how many items are in the list 
+    
+for (int i = 1; i < n; i++) {  //starts at the 2nd item(index1), go through the list 
+    T key = list[i]; //remeber the currect item 
+    int j = i - 1; //look at item before
+
+    // Ascending - sorting small-big
     if (!descending) {
+        //moving bigger numbers one step to the right 
         while (j >= 0 && list[j] > key) {
             list[j + 1] = list[j];
             j--;
         }
     }
-    // Descending
+    // Descending sorting big-small
     else {
-        while (j >= 0 && list[j] < key) {
+        //keep moving smaller numbers one step to the right 
+        while (j >= 0 && list[j] < key) { 
             list[j + 1] = list[j];
             j--;
         }
     }
 
-    list[j + 1] = key;
+    list[j + 1] = key; // put current item is right place 
 }
 }
 
@@ -200,47 +226,6 @@ for (int i = 1; i < n; i++) {
  *
  * */
 
-
-template<typename T>
-int partition(vector<T> &list, int low, int high, bool descending) {
-    T pivot = list[high];
-    int i = low - 1;
-
-    for (int j = low; j < high; j++) {
-        if ((!descending && list[j] <= pivot) ||
-            (descending && list[j] >= pivot)) {
-            i++;
-            swap(list[i], list[j]);
-        }
-    }
-    swap(list[i + 1], list[high]);
-    return i + 1;
-}
-
-
-
-
-
-
-
-template<typename T>
-void quicksort_helper(vector<T> &list, int low, int high, bool descending) {
-    if (low < high) {
-        int pi = partition(list, low, high, descending);
-        quicksort_helper(list, low, pi - 1, descending);
-        quicksort_helper(list, pi + 1, high, descending);
-    }
-}
-
-template<typename T>
-void quicksort(vector<T> &list, bool descending) {
-    if (!list.empty()) {
-        quicksort_helper(list, 0, list.size() - 1, descending);
-    }
-}
-
-
-
 /* Quick Partition
  *
  * Helper function for Quicksort. You will implement this to help with your
@@ -248,24 +233,72 @@ void quicksort(vector<T> &list, bool descending) {
  *
  */
 
+//Partition helps quicksort do its job 
+// it picks a pivot and puts smaller stuff on one side and bigger on the other 
+template<typename T>
+int partition(vector<T> &list, int low, int high, bool descending) {
+    T pivot = list[high]; // choose the last item as "pivot" 
+    int i = low - 1; // place for where the small-big item go 
 
+    for (int j = low; j < high; j++) { //look at each item between low and high 
+        if ((!descending && list[j] <= pivot) || //if sorting small-big put smaller items before pivot
+            (descending && list[j] >= pivot)) { //if sorting big-small put bigger items before pivot 
+            i++;     //move divider forward
+            swap(list[i], list[j]); //swap currect item into left side 
+        }
+    }
+    swap(list[i + 1], list[high]); //put pivot in middle(its current spot)
+    return i + 1; //return the pivots new position 
+}
+
+
+//QUICKSORT- picks a pivot toy and puts that in the right spot 
+//toys to the left are smaller and toys to right are bigger 
+//repeats this on the left pile and the right pile until everything is sorted 
 
 
 
 
 template<typename T>
+void quicksort_helper(vector<T> &list, int low, int high, bool descending) {
+    if (low < high) { //if their is more than 1 item in this part of the list
+        int pi = partition(list, low, high, descending); //put one number(pivot) in the right spot 
+        //everything smaller (or bigger if descending)on the left 
+        //eveyything bigger (or smaller if descending)on the right 
+        quicksort_helper(list, low, pi - 1, descending); //sort thr left half(stuff smaller than pivot)
+        quicksort_helper(list, pi + 1, high, descending);//sort right half(stuff bigger than pivot)
+    }
+}
+
+template<typename T>
+void quicksort(vector<T> &list, bool descending) {
+    if (!list.empty()) { //only sort if the list has something in it 
+        quicksort_helper(list, 0, list.size() - 1, descending); //start by sorting the whole list
+    }
+}
+
+
+
+
+
+
+
+//this function takes two halves of a list and merges them into one sorted list 
+
+template<typename T>
 void merge(vector<T> &list, int left, int mid, int right, bool descending) {
+    //figure out how many items are in the left hald and right half 
     int n1 = mid - left + 1;
     int n2 = right - mid;
 
-    vector<T> L(n1), R(n2);
+    vector<T> L(n1), R(n2); //make two small lists to hold the left and right halves 
 
-    for (int i = 0; i < n1; i++)
+    for (int i = 0; i < n1; i++) //copy the left half of the list into L
         L[i] = list[left + i];
-    for (int j = 0; j < n2; j++)
+    for (int j = 0; j < n2; j++) //copy the right half of the list into R
         R[j] = list[mid + 1 + j];
 
-    int i = 0, j = 0, k = left;
+    int i = 0, j = 0, k = left; //i=index for left list, j=index for right list, k=index for where we are in the big list 
 
     while (i < n1 && j < n2) {
         if ((!descending && L[i] <= R[j]) ||
@@ -291,17 +324,6 @@ void merge(vector<T> &list, int left, int mid, int right, bool descending) {
         k++;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
