@@ -300,30 +300,35 @@ void merge(vector<T> &list, int left, int mid, int right, bool descending) {
 
     int i = 0, j = 0, k = left; //i=index for left list, j=index for right list, k=index for where we are in the big list 
 
+    //compare items from L and R and put smaller/bigger on into list 
+
     while (i < n1 && j < n2) {
-        if ((!descending && L[i] <= R[j]) ||
-            (descending && L[i] >= R[j])) {
-            list[k] = L[i];
+        if ((!descending && L[i] <= R[j]) ||  //if sorting small-big
+            (descending && L[i] >= R[j])) {   //if sorting big-small
+            list[k] = L[i];  //take from left side 
             i++;
         } else {
-            list[k] = R[j];
+            list[k] = R[j]; //take from right side 
             j++;
         }
         k++;
     }
-
+    //if there are leftovers in the left list than copy them back 
     while (i < n1) {
         list[k] = L[i];
         i++;
         k++;
     }
-
+   //if there are leftovers in the right list than copy them back 
     while (j < n2) {
         list[k] = R[j];
         j++;
         k++;
     }
 }
+//it splits into two (left/right)
+//picks smaller each time and puts it back in the main box 
+//keeps doing that until its sorted 
 
 
 
@@ -332,9 +337,7 @@ void merge(vector<T> &list, int left, int mid, int right, bool descending) {
 
 
 
-
-
-/* Merge Sort 
+/* Merge Sort  -  Break the list into smaller pieces, sort each piece, then glue them back together.
  *
  * 10 points
  * 
@@ -353,17 +356,28 @@ void merge(vector<T> &list, int left, int mid, int right, bool descending) {
  * */
 template<typename T>
 void merge_sort_helper(vector<T> &list, int left, int right, bool descending) {
+    //only keep going if list has more than 1 item 
     if (left < right) {
+        //find the middle point of list
         int mid = left + (right - left) / 2;
+
+        //sort the left half 
         merge_sort_helper(list, left, mid, descending);
+
+        //sort the right half 
         merge_sort_helper(list, mid + 1, right, descending);
+
+        //merge the two sorted halves back together 
         merge(list, left, mid, right, descending);
     }
 }
 
 template<typename T>
 void merge_sort(vector<T> &list, bool descending) {
+
+    //only work if the list is not empty 
     if (!list.empty()) {
+        //sort the whole list from  first item to last 
         merge_sort_helper(list, 0, list.size() - 1, descending);
     }
 }
@@ -379,7 +393,8 @@ void merge_sort(vector<T> &list, bool descending) {
 
 
 
-/* Bucket Merge Sort
+/* Bucket Merge Sort - break the list into small 'buckets'
+//sort each bucket than glue them back all together 
  *
  * 20 points
  * 
@@ -401,16 +416,20 @@ void merge_sort(vector<T> &list, bool descending) {
 template<typename T>
 void bucket_merge_sort(vector<T> &list, bool descending) {
     int n = list.size();
-    if (n <= 1) return;
+    if (n <= 1) return; //if list is empty or has 1 thing, do not do anything 
 
-    // choose bucket size
+    // choose bucket size (5 items each)
     int bucketSize = 5;
+
+    //figure out how many buckets we need 
     int numBuckets = (n + bucketSize - 1) / bucketSize;
 
-    // split into buckets
+    // make the buckets 
     vector<vector<T>> buckets(numBuckets);
+
+    //put each item ftom the list into the bucket 
     for (int i = 0; i < n; i++) {
-        int b = i / bucketSize;
+        int b = i / bucketSize; //figure out which bucket it goes in 
         buckets[b].push_back(list[i]);
     }
 
@@ -419,7 +438,7 @@ void bucket_merge_sort(vector<T> &list, bool descending) {
         insertion_sort(buckets[i], descending);
     }
 
-    // merge buckets back into the original list
+    // glue back all buckets together 
     int idx = 0;
     for (int i = 0; i < numBuckets; i++) {
         for (T val : buckets[i]) {
@@ -435,6 +454,8 @@ void bucket_merge_sort(vector<T> &list, bool descending) {
 
 
 /* Binary Radix Sort
+// BINARY RADIX SORT - looks at numbers as 0s and 1s (like switches)
+// Sorts numbers by checking each "bit" (binary digit) from smallest to biggest.
  *
  * 20 points
  *
@@ -450,29 +471,36 @@ void bucket_merge_sort(vector<T> &list, bool descending) {
  */
 template<Integral T>
 void binary_radix_sort(vector<T> &list, bool descending) {
-    if (list.empty()) return;
+    if (list.empty()) return; //nothing to sort if list is empty 
 
     // find max to know how many bits to check
     T maxVal = *max_element(list.begin(), list.end());
-    int bits = sizeof(T) * 8;
+    int bits = sizeof(T) * 8; //how many switches a number has 
 
+
+    //look at each switch one at a time 
     for (int b = 0; b < bits; b++) {
-        vector<T> zeroBucket, oneBucket;
+        vector<T> zeroBucket, oneBucket; //two groups: one for 0, one for 1 
 
-        for (T val : list) {
-            if ((val >> b) & 1)
-                oneBucket.push_back(val);
-            else
-                zeroBucket.push_back(val);
+
+        //check the b-th switch of every number 
+        for (T val : list) { 
+            if ((val >> b) & 1)  //if switch is ON (1)
+                oneBucket.push_back(val); //put in 1 bucket
+            else                        //if switch is OFF (0)
+                zeroBucket.push_back(val); //put in 0 bucket
         }
 
-        // ascending: 0’s first, then 1’s
-        // descending: reverse order
+
+        //put buckets back into the list 
         if (!descending) {
+
+            //small to big - 0 bucket first, then 1 bucket 
             list.clear();
             list.insert(list.end(), zeroBucket.begin(), zeroBucket.end());
             list.insert(list.end(), oneBucket.begin(), oneBucket.end());
         } else {
+            //big to small - 1 bucket first, than 0 bucket 
             list.clear();
             list.insert(list.end(), oneBucket.begin(), oneBucket.end());
             list.insert(list.end(), zeroBucket.begin(), zeroBucket.end());
@@ -487,7 +515,7 @@ void binary_radix_sort(vector<T> &list, bool descending) {
 
 
 
-/* Your Hybrid Sort
+/* Your Hybrid Sort - mix of two sorting methods to be faster 
  *
  * 25 points
  *
@@ -508,7 +536,6 @@ void hybrid_helper(vector<T> &list, int low, int high, bool descending) {
     const int THRESHOLD = 10;
 
     if (low < high) {
-        // if subarray is small, use insertion sort
         if (high - low + 1 <= THRESHOLD) {
             vector<T> sub(list.begin() + low, list.begin() + high + 1);
             insertion_sort(sub, descending);
