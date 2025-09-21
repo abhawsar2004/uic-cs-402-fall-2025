@@ -533,27 +533,28 @@ void binary_radix_sort(vector<T> &list, bool descending) {
  */
 template<typename T>
 void hybrid_helper(vector<T> &list, int low, int high, bool descending) {
-    const int THRESHOLD = 10;
+    const int THRESHOLD = 10; //if a group is too small we use insertion sort 
 
     if (low < high) {
         if (high - low + 1 <= THRESHOLD) {
             vector<T> sub(list.begin() + low, list.begin() + high + 1);
-            insertion_sort(sub, descending);
+            insertion_sort(sub, descending); //sort the small piece 
             for (int i = 0; i < sub.size(); i++) {
-                list[low + i] = sub[i];
+                list[low + i] = sub[i]; //copy it back to the list 
             }
+            //if the piece is bigger we use quicksort
         } else {
-            int pi = partition(list, low, high, descending);
-            hybrid_helper(list, low, pi - 1, descending);
-            hybrid_helper(list, pi + 1, high, descending);
+            int pi = partition(list, low, high, descending); //put pivot in right spot 
+            hybrid_helper(list, low, pi - 1, descending); //sort left side 
+            hybrid_helper(list, pi + 1, high, descending); //sort right side 
         }
     }
 }
 
 template<typename T>
 void my_hybrid_sort(vector<T> &list, bool descending) {
-    if (!list.empty()) {
-        hybrid_helper(list, 0, list.size() - 1, descending);
+    if (!list.empty()) { //only sort if list has stuff 
+        hybrid_helper(list, 0, list.size() - 1, descending); //start a whole list 
     }
 }
 
