@@ -148,39 +148,37 @@ vector<int> weird_traversal(TreeNode *root) {
   // Yay! Let's start our fun tree adventure!
   vector<int> result;
 
-  // If the tree is empty, we have nothing to do! Bye bye!
+  // If the tree is empty, we have nothing to do!
   if (root == nullptr) {
     return result;
   }
 
-  // We need a queue to visit everyone layer by layer, like a line at the
-  // playground!
+  // We need a queue to visit everyone layer by layer, like a line 
   queue<TreeNode *> q;
   q.push(root);
 
-  // We will keep the odd layers here to visit them later, bottom to top!
+  // We will keep the odd layers here to visit them later, bottom to top
   vector<vector<int>> odd_layers;
   int level = 0;
 
-  // Let's go through the tree! Wheee!
+  // Let's go through the tree
   while (!q.empty()) {
     int size = q.size();
     vector<int> current_odd_layer;
 
-    // Look at all the friends in this layer!
+    // Look at all the friends in this layer
     for (int i = 0; i < size; ++i) {
       TreeNode *curr = q.front();
       q.pop();
 
-      // If we are on an even layer, we say hello right away!
+      // If we are on an even layer, we say hello right away
       if (level % 2 == 0) {
         result.push_back(curr->id);
       } else {
-        // If we are on an odd layer, we save them for later! Shhh!
+        // If we are on an odd layer, we save them for later
         current_odd_layer.push_back(curr->id);
       }
 
-      // Now let's find all the children of this node!
       TreeNode *child = curr->first_child;
       while (child != nullptr) {
         q.push(child);
@@ -188,7 +186,7 @@ vector<int> weird_traversal(TreeNode *root) {
       }
     }
 
-    // If we found some odd layer friends, let's remember them!
+    // If we found some odd layer friends, let's remember them
     if (level % 2 != 0) {
       odd_layers.push_back(current_odd_layer);
     }
@@ -197,7 +195,7 @@ vector<int> weird_traversal(TreeNode *root) {
     level++;
   }
 
-  // Now let's visit the odd layers backwards! So silly!
+  // Now let's visit the odd layers backwards
   // We go from the bottom layer up to the top odd layer.
   for (int i = odd_layers.size() - 1; i >= 0; --i) {
     // And in each layer, we go from right to left! Backwards again!
@@ -206,7 +204,6 @@ vector<int> weird_traversal(TreeNode *root) {
     }
   }
 
-  // We are done! That was fun!
   return result;
 }
 
@@ -295,7 +292,7 @@ TreeNode *bits_to_tree(const vector<bool> &bits) {
     else
       zeros++;
 
-    // If we have more 0s than 1s at any point, that's bad!
+    // If we have more 0s than 1s at any point
     // We can't go up if we haven't gone down!
     if (zeros > ones)
       return nullptr;
@@ -306,7 +303,7 @@ TreeNode *bits_to_tree(const vector<bool> &bits) {
     return nullptr;
   }
 
-  // Now let's build the tree! Yippee!
+  // Now let's build the tree
   // We start with the root, which is always 0.
   TreeNode *root = new TreeNode(0);
 
@@ -315,15 +312,15 @@ TreeNode *bits_to_tree(const vector<bool> &bits) {
   s.push(root);
 
   // We need to keep track of the last child we added to each node
-  // so we can add the next sibling easily!
+  // so we can add the next sibling easily
   map<TreeNode *, TreeNode *> last_child_map;
 
   int next_id = 1;
 
-  // Let's follow the path!
+  // Let's follow the path
   for (bool b : bits) {
     if (b) {
-      // 1 means go down! New child!
+      // 1 means go down! New child
       TreeNode *parent = s.top();
       TreeNode *child = new TreeNode(next_id++);
 
@@ -331,12 +328,12 @@ TreeNode *bits_to_tree(const vector<bool> &bits) {
       if (parent->first_child == nullptr) {
         parent->first_child = child;
       } else {
-        // Nope, let's add it as a sibling to the last child!
+        // Nope, let's add it as a sibling to the last child
         TreeNode *last_child = last_child_map[parent];
         last_child->next_sibling = child;
       }
 
-      // Remember this child is the last one we added to this parent!
+      // Remember this child is the last one we added to this parent
       last_child_map[parent] = child;
 
       // Now we are at the child!
@@ -347,7 +344,7 @@ TreeNode *bits_to_tree(const vector<bool> &bits) {
     }
   }
 
-  // We are done! Look at our beautiful tree!
+
   return root;
 }
 /* Problem 3: Light Post Problem (Trees + Dynamic Programming)
@@ -409,7 +406,7 @@ pair<int, vector<int>> light_post_problem(int n, const vector<Edge>& edges, cons
 // Do not modify this function signature
 pair<int, vector<int>> light_post_problem(int n, const vector<Edge> &edges,
                                           const vector<int> &costs) {
-  // Let's light up the tree! Sparkle sparkle!
+  // Let's light up the tree
 
   if (n == 0)
     return {0, {}};
@@ -524,7 +521,7 @@ pair<int, vector<int>> light_post_problem(int n, const vector<Edge> &edges,
     // Determine child states
     // We need to replicate the logic used to compute dp[u][state]
 
-    // For state 1, we need to know if we forced a child.
+    // For state 1, we need to know if we forced a child
     int min_diff = 1e9;
     int best_v = -1; // The child we force if needed
     bool natural_light = false;
